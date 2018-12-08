@@ -1,5 +1,6 @@
 package lib;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,16 @@ public class ModuleContainer {
 
     public Node instantiate() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         String nodeName = this.classname+"_"+counter++;
+
+        Constructor[] constructors = clazz.getConstructors();
+        for (int i = 0; i < constructors.length; i++) {
+            System.out.println("constuctor: " + constructors[i]);
+        }
+
+        Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
+        for (int i = 0; i < declaredConstructors.length; i++) {
+            System.out.println("declared constructor: " + declaredConstructors[i]);
+        }
         Node n = (Node)this.clazz.getConstructor(String.class).newInstance(nodeName);
         this.threadByName.put(nodeName,n);
         return n;
