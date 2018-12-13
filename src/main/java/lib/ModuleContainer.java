@@ -11,7 +11,7 @@ public class ModuleContainer {
     String categoryName;
     Class<?> category;
     Class<?> clazz;
-    Map<String,Node> threadByName = new HashMap<>();
+    transient Map<String,Node> threadByName = new HashMap<>();
 
     static int counter;
 
