@@ -104,7 +104,7 @@ public abstract class Com extends Thread{
      * @param id
      * @return
      */
-    public abstract Connection getProcessConnectionDescriptor(String id);
+    public abstract Connection getProcessConnectionDescriptor(String id,ConnectionType type);
 
     public abstract Connection calculateRemoteProcessConnectionDescriptor(String id,Connection c) ;
 
