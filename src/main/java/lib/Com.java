@@ -209,13 +209,15 @@ public abstract class Com extends Thread{
      */
     public abstract String publish(String msg,String sender);
 
-    /**
-     * abstract method for sending data to the one target process.
-     * @param to
-     * @param msg
-     * @param sender
-     * @return
-     */
+    public abstract List<String> distribute(List<String> msgs, String sender) ;
+
+        /**
+         * abstract method for sending data to the one target process.
+         * @param to
+         * @param msg
+         * @param sender
+         * @return
+         */
     public abstract String send(Connection to, String msg, String sender) throws IOException;
 
     /**
