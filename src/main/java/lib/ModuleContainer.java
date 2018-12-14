@@ -2,16 +2,17 @@ package lib;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class ModuleContainer {
     String classname;
     String categoryName;
-    Class<?> category;
-    Class<?> clazz;
+    transient Class<?> category;
+    transient Class<?> clazz;
     transient Map<String,Node> threadByName = new HashMap<>();
+    List<String> names=new LinkedList<>();
+
+
 
     static int counter;
 
@@ -25,7 +26,7 @@ public class ModuleContainer {
 
     public Node instantiate() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         String nodeName = this.classname+"_"+counter++;
-
+        this.names.add(nodeName);
         Constructor[] constructors = clazz.getConstructors();
         for (int i = 0; i < constructors.length; i++) {
             System.out.println("constuctor: " + constructors[i]);
@@ -42,9 +43,11 @@ public class ModuleContainer {
     @Deprecated
     public boolean killNode(String name) throws NoSuchElementException{
         Node n = this.threadByName.get(name);
+        this.names.remove(name);
         if(n == null)
             return false;
         n.interrupt();
+        this.threadByName.remove(name);
         return true;
     }
 

@@ -14,16 +14,16 @@ import java.util.Map;
 public class NetworkGraph {
 
     List<EdgeDescriptor> edgeList;
-   // NodeDescriptor root;
-    //List<NodeDescriptor> nodes = new LinkedList<>();
-   // Map<NodeDescriptor,Map<NodeDescriptor,EdgeDescriptor>> edges = new HashMap<>();
+   // PeerDescriptor root;
+    //List<PeerDescriptor> nodes = new LinkedList<>();
+   // Map<PeerDescriptor,Map<PeerDescriptor,EdgeDescriptor>> edges = new HashMap<>();
     // we add connection to the given node since the parts come from the neighbouring ones
     //rather we connect the arrived subgraphs with the recent node
     public NetworkGraph(List<EdgeDescriptor> localGraph){
         this.edgeList = localGraph;
     }
 
-   /* public NodeDescriptor getRoot(){
+   /* public PeerDescriptor getRoot(){
         //return this.nodes.get(0);
     }*/
    public void addEdge(EdgeDescriptor e){
@@ -32,7 +32,7 @@ public class NetworkGraph {
 
     public void addSubGraph(NetworkGraph toAdd){
       this.edgeList.addAll(toAdd.edgeList);
-            /* for(Map.Entry<NodeDescriptor, EdgeDescriptor> edges : neighbpours.getValue().entrySet()){
+            /* for(Map.Entry<PeerDescriptor, EdgeDescriptor> edges : neighbpours.getValue().entrySet()){
                  if(!this.edges.containsKey(edges.getKey()))
                      this.edges.
              }*/

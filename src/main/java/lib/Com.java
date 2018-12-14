@@ -1,7 +1,7 @@
 package lib;
 
 import network.NetworkGraph;
-import network.NodeDescriptor;
+import network.PeerDescriptor;
 import utils.Utils;
 
 import java.io.File;
@@ -19,6 +19,8 @@ public abstract class Com extends Thread{
     public int getDefaultPort() {
         return defaultPort;
     }
+
+    public abstract Map<String,List<Connection>> getConnections();
 
     public void setDefaultPort(int defaultPort) {
         this.defaultPort = defaultPort;
@@ -267,8 +269,9 @@ public abstract class Com extends Thread{
 
     public abstract Address getPeerAddress();
 
-    public NodeDescriptor getInfo(){
-        return new NodeDescriptor(this.moduleDescriptionByCategory, this.peerAddress );
+    // TODO: 2018. 12. 13. redundant
+    public PeerDescriptor getInfo(){
+        return new PeerDescriptor(this.moduleDescriptionByCategory, this.peerAddress ,this);
     }
 
     //public abstract List<NetworkGraph> requestNeighboursMap();
