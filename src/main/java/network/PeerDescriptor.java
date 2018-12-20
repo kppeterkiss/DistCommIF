@@ -16,10 +16,10 @@ import java.util.Map;
 public class PeerDescriptor {
     // address of the {@link Com}
     Address address;
-    Map<Class, List<ModuleContainer>> moduleDescriptionByCategory;
+    Map<String, List<ModuleContainer>> moduleDescriptionByCategory;
     Map<String,List<Connection>> connections;
 
-    public PeerDescriptor(Map<Class, List<ModuleContainer>> moduleDescriptionByCategory, Address peerAddress, Com com) {
+    public PeerDescriptor(Map<String, List<ModuleContainer>> moduleDescriptionByCategory, Address peerAddress, Com com) {
         this.address= peerAddress;
         this.moduleDescriptionByCategory = moduleDescriptionByCategory;
         this.connections = com.getConnections();

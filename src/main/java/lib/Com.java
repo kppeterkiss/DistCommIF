@@ -273,7 +273,9 @@ public abstract class Com extends Thread{
 
     // TODO: 2018. 12. 13. redundant
     public PeerDescriptor getInfo(){
-        return new PeerDescriptor(this.moduleDescriptionByCategory, this.peerAddress ,this);
+        final Map<String,List<ModuleContainer>> map = new HashMap<>();
+        this.moduleDescriptionByCategory.forEach((k,v)->map.put(k.getCanonicalName(),v));
+        return new PeerDescriptor(map, this.peerAddress ,this);
     }
 
     //public abstract List<NetworkGraph> requestNeighboursMap();
