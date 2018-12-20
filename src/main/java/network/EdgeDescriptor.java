@@ -1,5 +1,7 @@
 package network;
 
+import java.util.Arrays;
+
 public class EdgeDescriptor {
     long bandwidth;
     long delay;
@@ -15,5 +17,18 @@ public class EdgeDescriptor {
         this.bandwidth = bandwidth;
         this.delay = delay;
         this.nodes = nodes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EdgeDescriptor that = (EdgeDescriptor) o;
+        return Arrays.equals(nodes, that.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(nodes);
     }
 }
