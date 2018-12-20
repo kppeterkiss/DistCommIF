@@ -7,6 +7,7 @@ import lib.ModuleContainer;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Class to describe the peer. It should contain the addresses of peer process, the availible modules, their instances and their connections.
@@ -23,5 +24,19 @@ public class PeerDescriptor {
         this.address= peerAddress;
         this.moduleDescriptionByCategory = moduleDescriptionByCategory;
         this.connections = com.getConnections();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PeerDescriptor that = (PeerDescriptor) o;
+        return Objects.equals(address, that.address);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(address);
     }
 }
