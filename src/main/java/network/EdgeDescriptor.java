@@ -24,7 +24,8 @@ public class EdgeDescriptor {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EdgeDescriptor that = (EdgeDescriptor) o;
-        return Arrays.equals(nodes, that.nodes);
+        return this.nodes[0].equals(that.nodes[0]) && this.nodes[1].equals(that.nodes[1]);
+        //return Arrays.equals(nodes, that.nodes);
     }
 
     @Override

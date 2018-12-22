@@ -27,18 +27,18 @@ public class NetworkGraph {
         //return this.nodes.get(0);
     }*/
    public void addEdge(EdgeDescriptor e){
+       if (this.edgeList.contains(e))
+           //to update the volatile values like delay etc
+           this.edgeList.remove(e);
        this.edgeList.add(e);
    }
 
     public void addSubGraph(NetworkGraph toAdd){
       for(EdgeDescriptor ed : toAdd.edgeList) {
-          if (this.edgeList.contains(ed))
-              //to update the volatile values like delay etc
-              this.edgeList.remove(ed);
-          this.edgeList.add(ed);
+          addEdge(ed);
       }
 
-      this.edgeList.addAll(toAdd.edgeList);
+      //this.edgeList.addAll(toAdd.edgeList);
             /* for(Map.Entry<PeerDescriptor, EdgeDescriptor> edges : neighbpours.getValue().entrySet()){
                  if(!this.edges.containsKey(edges.getKey()))
                      this.edges.

@@ -14,6 +14,7 @@ import java.util.Map;
 
 public abstract class Com extends Thread{
 
+    // TODO: 2018. 12. 22. might be useless..
     Address peerAddress;
 
     public int getDefaultPort() {
@@ -57,6 +58,7 @@ public abstract class Com extends Thread{
         categorynames.put(Coordinator.class,"coordinator");
         categorynames.put(Slave.class,"slave");
         categorynames.put(Node.class,"slave");
+        this.peerAddress = getPeerAddress();
     }
 
     /**
@@ -275,7 +277,7 @@ public abstract class Com extends Thread{
     public PeerDescriptor getInfo(){
         final Map<String,List<ModuleContainer>> map = new HashMap<>();
         this.moduleDescriptionByCategory.forEach((k,v)->map.put(k.getCanonicalName(),v));
-        return new PeerDescriptor(map, this.peerAddress ,this);
+        return new PeerDescriptor(map, this.getPeerAddress() ,this);
     }
 
     //public abstract List<NetworkGraph> requestNeighboursMap();
