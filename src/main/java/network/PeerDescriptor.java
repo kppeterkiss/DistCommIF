@@ -20,8 +20,8 @@ public class PeerDescriptor<A extends Address,C extends Connection> {
     Map<String, List<ModuleContainer>> moduleDescriptionByCategory;
     Map<String,List<C>> connections;
 
-    public PeerDescriptor(Map<String, List<ModuleContainer>> moduleDescriptionByCategory, Address peerAddress, Com com) {
-        this.address= (A)peerAddress;
+    public PeerDescriptor(Map<String, List<ModuleContainer>> moduleDescriptionByCategory, A peerAddress, Com<C,A> com) {
+        this.address= peerAddress;
         this.moduleDescriptionByCategory = moduleDescriptionByCategory;
 
         this.connections =com.getConnections();
@@ -31,7 +31,7 @@ public class PeerDescriptor<A extends Address,C extends Connection> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PeerDescriptor that = (PeerDescriptor) o;
+        PeerDescriptor<A,C> that = (PeerDescriptor<A,C>) o;
         return Objects.equals(address, that.address);
     }
 
