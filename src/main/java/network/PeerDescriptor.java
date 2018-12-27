@@ -14,16 +14,17 @@ import java.util.Objects;
  *
  *
  */
-public class PeerDescriptor {
+public class PeerDescriptor<A extends Address,C extends Connection> {
     // address of the {@link Com}
-    Address address;
+    A address;
     Map<String, List<ModuleContainer>> moduleDescriptionByCategory;
-    Map<String,List<Connection>> connections;
+    Map<String,List<C>> connections;
 
     public PeerDescriptor(Map<String, List<ModuleContainer>> moduleDescriptionByCategory, Address peerAddress, Com com) {
-        this.address= peerAddress;
+        this.address= (A)peerAddress;
         this.moduleDescriptionByCategory = moduleDescriptionByCategory;
-        this.connections = com.getConnections();
+
+        this.connections =com.getConnections();
     }
 
     @Override

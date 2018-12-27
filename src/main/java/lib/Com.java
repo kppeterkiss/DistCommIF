@@ -12,16 +12,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Com extends Thread{
+public abstract class Com<C extends Connection, A extends Address> extends Thread{
 
     // TODO: 2018. 12. 22. might be useless..
-    Address peerAddress;
+    A peerAddress;
 
     public int getDefaultPort() {
         return defaultPort;
     }
 
-    public abstract Map<String,List<Connection>> getConnections();
+    public abstract Map<String,List<C>> getConnections();
 
     public void setDefaultPort(int defaultPort) {
         this.defaultPort = defaultPort;
@@ -87,9 +87,9 @@ public abstract class Com extends Thread{
         return null;
     }
 
-    public abstract String launchRemoteModule(Connection c, String moduleName, String[] arguments);
+    public abstract String launchRemoteModule(C c, String moduleName, String[] arguments);
 
-    public abstract String killRemoteModule(Connection c);
+    public abstract String killRemoteModule(C c);
 
 
     public Node getModuleReferenceByName(String name){
@@ -108,9 +108,9 @@ public abstract class Com extends Thread{
      * @param id
      * @return
      */
-    public abstract Connection getProcessConnectionDescriptor(String id,ConnectionType type);
+    public abstract C getProcessConnectionDescriptor(String id,ConnectionType type);
 
-    public abstract Connection calculateRemoteProcessConnectionDescriptor(String id,Connection c) ;
+    public abstract C calculateRemoteProcessConnectionDescriptor(String id,Connection c) ;
 
     /**
      * Ask a remote process to establish a connection to another remote process.
@@ -120,7 +120,7 @@ public abstract class Com extends Thread{
      * @param connDEscriptor The type of the connection to be established.
      * @return success
      */
-    public abstract boolean addConnectionToRemote(Connection descriptor, String name, Connection descriptor2, ConnectionType connDEscriptor);
+    public abstract boolean addConnectionToRemote(C descriptor, String name, Connection descriptor2, ConnectionType connDEscriptor);
 
     /**
      * Ask a peer top instantiate a remote process.
@@ -129,7 +129,7 @@ public abstract class Com extends Thread{
      * @param args The args array to be passed to the process at startup,
      * @return success
      */
-    public abstract  boolean startRemoteProcess(Connection descriptor, String name, String[] args);
+    public abstract  boolean startRemoteProcess(C descriptor, String name, String[] args);
 
     /*
     public int getFreePort() throws IOException {
@@ -220,7 +220,7 @@ public abstract class Com extends Thread{
          * @param sender
          * @return
          */
-    public abstract String send(Connection to, String msg, String sender) throws IOException;
+    public abstract String send(C to, String msg, String sender) throws IOException;
 
     /**
      * Abstract method to acccess the processes mailbox. 
@@ -247,7 +247,7 @@ public abstract class Com extends Thread{
      *                   the {@link Com} object.
      * @return connection successful
      */
-    public abstract boolean connectToNetwork(Connection descriptor);
+    public abstract boolean connectToNetwork(C descriptor);
 
     /**
      * Method for specifying the processes where the produced output should be sent. The target process will be added to consumer process list,
@@ -256,7 +256,7 @@ public abstract class Com extends Thread{
      * @param processId The identifier of the target process
      * @return connection successful
      */
-    public abstract boolean addOutPutChannel(Connection descriptor, String processId);
+    public abstract boolean addOutPutChannel(C descriptor, String processId);
 
     /**
      * Method for subscribing for uptates to another process. The process in parameter will be added to source node list,
@@ -265,13 +265,13 @@ public abstract class Com extends Thread{
      * @param processId
      * @return connection successful
      */
-    public abstract boolean addInputchannel(Connection descriptor, String processId);
+    public abstract boolean addInputchannel(C descriptor, String processId);
 
-    public boolean addBidirectionalChannel(Connection descriptor,String processId){
+    public boolean addBidirectionalChannel(C descriptor,String processId){
         return addOutPutChannel(descriptor,processId) && addInputchannel(descriptor,processId);
     }
 
-    public abstract Address getPeerAddress();
+    public abstract A getPeerAddress();
 
     // TODO: 2018. 12. 13. redundant
     public PeerDescriptor getInfo(){
