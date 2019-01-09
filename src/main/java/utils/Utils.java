@@ -51,14 +51,19 @@ public class Utils {
                     JarFile jarFile = null;
                     try {
                         System.out.println(filePath.toString());
+                        File jf = new File(filePath.toString());
+                        jarFile = new JarFile(jf);
 
-                        jarFile = new JarFile(filePath.toString());
                         String mainClassName = (String) jarFile.getManifest().getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);;
                         Enumeration<JarEntry> e = jarFile.entries();
+                        //orig
+                        //urls = new URL[0];
+                        //urls = new URL[]{new URL("jar:file:" + filePath.toAbsolutePath() + "!/")};
+                        //                        URLClassLoader cl = URLClassLoader.newInstance(urls);
 
-                        urls = new URL[0];
-                        urls = new URL[]{new URL("jar:file:" + filePath + "!/")};
-                        URLClassLoader cl = URLClassLoader.newInstance(urls);
+                       // URL jarUrl1 = new URL("jar", "", filePath.toAbsolutePath() + "!/");
+                        URL jarUrl2 = jf.toURI().toURL();
+                        URLClassLoader cl = URLClassLoader.newInstance(new URL[]{jarUrl2});
                         try {
                             while (e.hasMoreElements()) {
                                 JarEntry je = e.nextElement();

@@ -1,4 +1,9 @@
 package lib;
 
-public interface Connection {
+public abstract class Connection<A extends Address> {
+    public A getAddress() {
+        return address;
+    }
+
+    A address;
 }

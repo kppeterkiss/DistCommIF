@@ -1,9 +1,9 @@
 package lib;
 
-public abstract class Node extends Thread{
+public abstract class Node/*<C extends Connection, A extends Address>*/ extends Thread{
 
 
-    private Connection coordinatorDescriptor;
+   // private A coordinatorDescriptor;
 
     public String[] getArguments() {
         return arguments;
@@ -16,13 +16,13 @@ public abstract class Node extends Thread{
     //public void setApplicationNodeId(String id) {
     //    this.applicationNodeId = id;
     //}
-    public void setCoordinatorDescriptor(Connection s){
-        this.coordinatorDescriptor = s;
-    }
-    public void connect(){
-        this.com.connectToNetwork(this.coordinatorDescriptor);
-        this.com.addOutPutChannel(this.coordinatorDescriptor,this.getName());
-    }
+   // public void setCoordinatorDescriptor(A a){
+   //     this.coordinatorDescriptor = a;
+   // }
+   // public void connect(){
+   //     this.com.connectToNetwork(this.coordinatorDescriptor);
+   //     this.com.addOutPutChannel(this.coordinatorDescriptor,this.getName());
+   // }
     public Node(String name){
         super(name);
     }
@@ -36,9 +36,9 @@ public abstract class Node extends Thread{
 
     //
     //String applicationNodeId = this.getClass().getName()+"node";
-    protected Com com;
+    protected Com<?,?> com;
     // instantiated by the Com object thus it will be handled there. This method is also called byCom.
-    public void setCom(Com c){this.com = c;/*c.addNode(getApplicationNodeId(),this);*/}
+    public void setCom(Com<?,?> c){this.com = c;/*c.addNode(getApplicationNodeId(),this);*/}
 
     //public abstract void receive(String s);
     //public abstract void send(String s);

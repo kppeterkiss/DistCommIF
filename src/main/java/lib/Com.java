@@ -1,7 +1,12 @@
 package lib;
 
+import network.EdgeType;
 import network.NetworkGraph;
 import network.PeerDescriptor;
+import plan.CallGraph;
+import plan.ExecutionEdge;
+import plan.ModulePlacement;
+import plan.NodeDescriptor;
 import utils.Utils;
 
 import java.io.File;
@@ -12,7 +17,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+// TODO: 2019. 01. 02. connection should be omitted -> address
 public abstract class Com<C extends Connection, A extends Address> extends Thread{
+
+    //enable node to transmit messages
+    Map<Address,Address> routingTable;
 
     // TODO: 2018. 12. 22. might be useless..
     A peerAddress;
@@ -71,12 +80,13 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      */
-    public String  launchModule(String moduleName, String[]  arguments) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    public String  launchModule(String moduleName, String[]  arguments, String processId) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+
 
         for(Map.Entry<Class,List<ModuleContainer>> e : this.moduleDescriptionByCategory.entrySet()){
             for(ModuleContainer md : e.getValue())
                 if(md.classname.equals(moduleName)) {
-                    Node n = md.instantiate();
+                    Node n = md.instantiate(processId);
                     n.setCom(this);
                     n.setArguments(arguments);
                     n.start();
@@ -87,9 +97,30 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
         return null;
     }
 
-    public abstract String launchRemoteModule(C c, String moduleName, String[] arguments);
+    // TODO: 2019. 01. 02. this vs launchRemoteModule ??? onde of these can be not used
+   // public abstract String launchRemoteModule(C c, String moduleName, String[] arguments);
 
-    public abstract String killRemoteModule(C c);
+    public abstract String killRemoteModule(A c);
+
+    public String startModule(NodeDescriptor<A> nd) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        if(isLocalNode(nd))
+            return launchModule(nd.getModuleClassName(),nd.getArgs(),nd.getProcessId());
+        else
+            return launchRemoteModule(nd.getLocation(),nd.getModuleClassName(),nd.getArgs(),nd.getProcessId());
+    }
+
+    private boolean isLocalNode(NodeDescriptor<A> nd) {
+        return nd.getHostingPeerLocation().equals(this.getPeerAddress());
+    }
+
+    public void connectModules(NodeDescriptor<A> nd1, NodeDescriptor<A> nd2){
+        if(isLocalNode(nd1))
+            addOutPutChannel(nd2.getLocation(),nd1.getProcessId());
+        else if(isLocalNode(nd1))
+            addInputchannel(nd1.getLocation(),nd2.getProcessId());
+        else
+            sendConnectionRequest(nd1,nd2);
+    }
 
 
     public Node getModuleReferenceByName(String name){
@@ -108,28 +139,28 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
      * @param id
      * @return
      */
-    public abstract C getProcessConnectionDescriptor(String id,ConnectionType type);
+    public abstract C getProcessConnectionDescriptor(String id, EdgeType type);
 
     public abstract C calculateRemoteProcessConnectionDescriptor(String id,Connection c) ;
 
     /**
      * Ask a remote process to establish a connection to another remote process.
-     * @param descriptor the descriptor of the connection to the remote process.
+     * @param remoteAddress the descriptor of the connection to the remote process.
      * @param name ???
-     * @param descriptor2 The descriptor of the remote process to which the connection is required to build
+     * @param connectionToBuild The descriptor of the connection, which the process at the remoteAddress should build.
      * @param connDEscriptor The type of the connection to be established.
      * @return success
      */
-    public abstract boolean addConnectionToRemote(C descriptor, String name, Connection descriptor2, ConnectionType connDEscriptor);
+    public abstract boolean addConnectionToRemote(A remoteAddress, String name, Connection connectionToBuild, EdgeType connDEscriptor);
 
     /**
      * Ask a peer top instantiate a remote process.
      * @param descriptor The connectrion information of the remote peer
      * @param name The name of the module to start.
      * @param args The args array to be passed to the process at startup,
-     * @return success
+     * @return id of the process started
      */
-    public abstract  boolean startRemoteProcess(C descriptor, String name, String[] args);
+    public abstract String launchRemoteModule(A descriptor, String name, String[] args, String processId);
 
     /*
     public int getFreePort() throws IOException {
@@ -220,7 +251,7 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
          * @param sender
          * @return
          */
-    public abstract String send(C to, String msg, String sender) throws IOException;
+    public abstract String send(A to, String msg, String sender) throws IOException;
 
     /**
      * Abstract method to acccess the processes mailbox. 
@@ -247,7 +278,11 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
      *                   the {@link Com} object.
      * @return connection successful
      */
-    public abstract boolean connectToNetwork(C descriptor);
+    public abstract boolean connectToNetwork(A descriptor);
+
+
+
+    public abstract boolean sendConnectionRequest(NodeDescriptor<A> nd1, NodeDescriptor<A> nd2);
 
     /**
      * Method for specifying the processes where the produced output should be sent. The target process will be added to consumer process list,
@@ -256,7 +291,7 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
      * @param processId The identifier of the target process
      * @return connection successful
      */
-    public abstract boolean addOutPutChannel(C descriptor, String processId);
+    public abstract boolean addOutPutChannel(A descriptor, String processId);
 
     /**
      * Method for subscribing for uptates to another process. The process in parameter will be added to source node list,
@@ -265,9 +300,9 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
      * @param processId
      * @return connection successful
      */
-    public abstract boolean addInputchannel(C descriptor, String processId);
+    public abstract boolean addInputchannel(A descriptor, String processId);
 
-    public boolean addBidirectionalChannel(C descriptor,String processId){
+    public boolean addBidirectionalChannel(A descriptor,String processId){
         return addOutPutChannel(descriptor,processId) && addInputchannel(descriptor,processId);
     }
 
@@ -283,6 +318,42 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
     //public abstract List<NetworkGraph> requestNeighboursMap();
 
     public abstract NetworkGraph mapNetwork();
+
+
+
+    public CallGraph planDeployment(CallGraph callgraph, ModulePlacement<CallGraph,NetworkGraph> mp){
+        return  mp.apply(callgraph,this.mapNetwork());
+    }
+
+    public boolean deploy(CallGraph callGraph) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+       /* NodeDescriptor source = callGraph.getSource();
+        NodeDescriptor target = callGraph.getSource();
+        String sourceName = this.launchModule(source.getModuleClassName(),source.getArgs());
+        String targetName = this.launchModule(source.getModuleClassName(),source.getArgs());*/
+        List<String> launchedModuleIds = new LinkedList<>();
+        for(ExecutionEdge edge : callGraph.getEdgeList()){
+            NodeDescriptor<A> nd1 = edge.getFirstNode();
+            NodeDescriptor<A> nd2 = edge.getEndNode();
+            if(!launchedModuleIds.contains(nd1.getProcessId())) {
+                startModule(nd1);
+                launchedModuleIds.add(nd1.getProcessId());
+            }
+            if(!launchedModuleIds.contains(nd2.getProcessId())) {
+                startModule(nd2);
+                launchedModuleIds.add(nd2.getProcessId());
+            }
+            connectModules(nd1,nd2);
+
+        }
+        // TODO: 2019. 01. 02. check success 
+        return true;
+
+
+
+
+
+
+    }
 
 
 }

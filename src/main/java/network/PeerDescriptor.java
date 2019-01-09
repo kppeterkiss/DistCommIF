@@ -14,7 +14,15 @@ import java.util.Objects;
  *
  *
  */
-public class PeerDescriptor<A extends Address,C extends Connection> {
+public class PeerDescriptor<A extends Address,C extends Connection> extends GraphNode {
+    public A getAddress() {
+        return address;
+    }
+
+    public A resolveProcessAddress(String processId){
+        return (A)address.resolveProcessAddress(processId);
+    }
+
     // address of the {@link Com}
     A address;
     Map<String, List<ModuleContainer>> moduleDescriptionByCategory;
@@ -23,7 +31,6 @@ public class PeerDescriptor<A extends Address,C extends Connection> {
     public PeerDescriptor(Map<String, List<ModuleContainer>> moduleDescriptionByCategory, A peerAddress, Com<C,A> com) {
         this.address= peerAddress;
         this.moduleDescriptionByCategory = moduleDescriptionByCategory;
-
         this.connections =com.getConnections();
     }
 

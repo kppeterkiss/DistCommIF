@@ -24,8 +24,8 @@ public class ModuleContainer {
     }
 
 
-    public Node instantiate() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        String nodeName = this.classname+"_"+counter++;
+    public Node instantiate(String processId ) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        String nodeName = processId==null?this.classname+"_"+counter++:processId;
         this.names.add(nodeName);
         Constructor[] constructors = clazz.getConstructors();
         for (int i = 0; i < constructors.length; i++) {
