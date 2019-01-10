@@ -114,11 +114,11 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
     }
 
     public void connectModules(NodeDescriptor<A> nd1, NodeDescriptor<A> nd2){
-        if(isLocalNode(nd1))
+        if(isLocalNode(nd1))  // will be an output for the the local node
             addOutPutChannel(nd2.getLocation(),nd1.getProcessId());
-        else if(isLocalNode(nd1))
+        else if(isLocalNode(nd2)) // will be an input for the the local node
             addInputchannel(nd1.getLocation(),nd2.getProcessId());
-        else
+        else // both nodes are remote
             sendConnectionRequest(nd1,nd2);
     }
 
@@ -296,11 +296,11 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
     /**
      * Method for subscribing for uptates to another process. The process in parameter will be added to source node list,
      * and a message will be sent to the target process for adding the current process to the consumer process list.
-     * @param descriptor
-     * @param processId
+     * @param addressOfNodeToConnect
+     * @param processIdOfConnInitiator
      * @return connection successful
      */
-    public abstract boolean addInputchannel(A descriptor, String processId);
+    public abstract boolean addInputchannel(A addressOfNodeToConnect, String processIdOfConnInitiator);
 
     public boolean addBidirectionalChannel(A descriptor,String processId){
         return addOutPutChannel(descriptor,processId) && addInputchannel(descriptor,processId);
