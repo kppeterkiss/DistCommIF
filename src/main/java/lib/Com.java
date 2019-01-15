@@ -106,7 +106,7 @@ public abstract class Com<C extends Connection, A extends Address> extends Threa
         if(isLocalNode(nd))
             return launchModule(nd.getModuleClassName(),nd.getArgs(),nd.getProcessId());
         else
-            return launchRemoteModule(nd.getLocation(),nd.getModuleClassName(),nd.getArgs(),nd.getProcessId());
+            return launchRemoteModule(nd.getHostingPeerLocation(),nd.getModuleClassName(),nd.getArgs(),nd.getProcessId());
     }
 
     private boolean isLocalNode(NodeDescriptor<A> nd) {
